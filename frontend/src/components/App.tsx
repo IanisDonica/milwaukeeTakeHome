@@ -1,52 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import Login from './Login';
-import Tools from './Tools';
-import Logs from './Logs';
-import api from '../api';
-import '../styles/App.css';
+import React, { useState } from 'react';
+import LoginMenu from './Login.tsx';
+import Tools from './Tools.tsx';
+import Logs from './Logs.tsx';
+import { LanguageProvider, useLanguage } from './LanguageContext.tsx';
+import { NotificationProvider } from './NotificationContext.tsx';
 
-const App: React.FC = () => {
-    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-    const [logs, setLogs] = useState<any[]>([]);
+type Page = 'tools' | 'logs';
 
-    useEffect(() => {
-        if (token) {
-            fetchLogs();
-        }
-    }, [token]);
+function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
 
-    const handleLogin = (token: string) => {
-        setToken(token);
-        localStorage.setItem('token', token);
-    };
+  return (
+    <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+      <select
+        value={language}
+        onChange={(e) => setLanguage(e.target.value as any)}
+        style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ddd', background: '#fff' }}
+      >
+        <option value="en">🇬🇧 English</option>
+        <option value="ro">🇷🇴 Română</option>
+        <option value="de">🇩🇪 Deutsch</option>
+      </select>
+    </div>
+  );
+}
 
-    const handleLogout = () => {
-        setToken(null);
-        localStorage.removeItem('token');
-    };
+function MainApp() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('authToken'));
+  const [currentPage, setCurrentPage] = useState<Page>('tools');
 
-    const fetchLogs = async () => {
-        try {
-            const response = await api.get('/logs');
-            setLogs(response.data);
-        } catch (error) {
-            console.error('Failed to fetch logs', error);
-        }
-    };
+  const handleLogin = (token: string) => {
+    localStorage.setItem('authToken', token);
+    setIsLoggedIn(true);
+    setCurrentPage('tools');
+  };
 
-    return (
-        <div className="App">
-            {!token ? (
-                <Login onLogin={handleLogin} />
-            ) : (
-                <>
-                    <button onClick={handleLogout}>Logout</button>
-                    <Tools token={token} />
-                    <Logs logs={logs} />
-                </>
-            )}
-        </div>
-    );
-};
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    setIsLoggedIn(false);
+  };
+
+  const renderPage = () => {
+    if (!isLoggedIn) {
+      return <LoginMenu onLogin={handleLogin} />;
+    }
+
+    switch (currentPage) {
+      case 'tools':
+        return <Tools onLogout={handleLogout} onViewLogs={() => setCurrentPage('logs')} />;
+      case 'logs':
+        return <Logs onBack={() => setCurrentPage('tools')} />;
+      default:
+        return <Tools onLogout={handleLogout} onViewLogs={() => setCurrentPage('logs')} />;
+    }
+  };
+
+  return (
+    <div>
+      <LanguageSwitcher />
+      {renderPage()}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <NotificationProvider>
+        <MainApp />
+      </NotificationProvider>
+    </LanguageProvider>
+  );
+}
 
 export default App;

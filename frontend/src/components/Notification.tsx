@@ -1,17 +1,8 @@
-import React from 'react';
-import '../styles/Notification.css';
+import { useLanguage } from './LanguageContext.tsx';
 
-interface NotificationProps {
-    message: string;
-    type: 'success' | 'error';
+function Notification() {
+    const { t } = useLanguage();
+    return <h1>{t('notificationTest')}</h1>;
 }
-
-const Notification: React.FC<NotificationProps> = ({ message, type }) => {
-    return (
-        <div className={`notification ${type}`}>
-            {message}
-        </div>
-    );
-};
 
 export default Notification;

@@ -1,44 +1,70 @@
-import React, { useState } from 'react';
-import api from '../api';
+import React, { useState, type JSX } from 'react';
+import api, { getApiErrorMessage } from '../api.ts';
 import '../styles/Login.css';
+import { useLanguage } from './LanguageContext.tsx';
+import { useNotification } from './NotificationContext.tsx';
 
-interface LoginProps {
-    onLogin: (token: string) => void;
+interface LoginMenuProps {
+  onLogin: (token: string) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
-    const [clientId, setClientId] = useState('');
-    const [clientSecret, setClientSecret] = useState('');
-    const [error, setError] = useState('');
+function LoginMenu({ onLogin }: LoginMenuProps): JSX.Element {
+  const { t } = useLanguage();
+  const { addNotification } = useNotification();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleLogin = async () => {
-        try {
-            const response = await api.post('/auth/token', { client_id: clientId, client_secret: clientSecret });
-            onLogin(response.data.access_token);
-        } catch (err) {
-            setError('Failed to login. Please check your credentials.');
-        }
-    };
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();
+    setIsSubmitting(true);
 
-    return (
-        <div className="login-container">
-            <h2>Login</h2>
-            <input
-                type="text"
-                placeholder="Client ID"
-                value={clientId}
-                onChange={(e) => setClientId(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Client Secret"
-                value={clientSecret}
-                onChange={(e) => setClientSecret(e.target.value)}
-            />
-            <button onClick={handleLogin}>Login</button>
-            {error && <p className="error">{error}</p>}
+    try {
+      const response = await api.post('/auth/token/', { username, password });
+      const token = response.data?.token || response.data?.access;
+      if (token) {
+        onLogin(token);
+      } else {
+        addNotification(t('errorUnexpected'), 'error');
+      }
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error) || t('errorUnexpected');
+      addNotification(errorMessage, 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <h2>{t('loginTitle')}</h2>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="form-group">
+          <label htmlFor="username">{t('usernameLabel')}</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={isSubmitting}
+          />
         </div>
-    );
-};
+        <div className="form-group">
+          <label htmlFor="password">{t('passwordLabel')}</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+          />
+        </div>
+        <button type="submit" className="submit-button" disabled={isSubmitting}>
+          {isSubmitting ? t('loggingInButton') : t('loginButton')}
+        </button>
+      </form>
+    </div>
+  );
+}
 
-export default Login;
+export default LoginMenu;

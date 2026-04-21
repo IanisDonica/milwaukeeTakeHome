@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
-  // withCredentials: true might still be useful for other cookies, but it was primarily for CSRF. Keeping it is safe.
-  withCredentials: true,
+  baseURL: 'http://localhost:8000'
 });
 
 api.interceptors.request.use((config) => {

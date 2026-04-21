@@ -1,44 +1,189 @@
 .tools-container {
-    margin-top: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 80px; /* Add space for the floating action button */
 }
 
-.tool-item {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h2 {
+  color: #1a2c42;
+  font-weight: 600;
+}
+
+.section-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.tool-item input {
-    margin-right: 10px;
+.section-header h3 {
+    color: #1a2c42;
+    font-weight: 600;
 }
 
-.transfer-section {
-    margin-top: 20px;
+.logout-btn, .transfer-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-.transfer-section input {
-    margin-right: 10px;
-    padding: 8px;
+.logout-btn {
+  background-color: #6c757d;
 }
 
-.transfer-section button {
-    padding: 10px;
+.logout-btn:hover {
+  background-color: #5a6268;
 }
 
-.message {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+.transfer-btn {
+  background-color: #007bff;
 }
 
-.message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+.transfer-btn:hover {
+  background-color: #0056b3;
 }
 
-.message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.transfer-btn:disabled {
+  background-color: #a9cce3;
+  cursor: not-allowed;
+}
+
+/* Floating Action Button for Transfer/Return */
+.floating-action-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  animation: slideUp 0.3s ease-out;
+}
+
+.floating-action-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.floating-action-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.floating-action-btn:active {
+  transform: translateY(0);
+}
+
+.badge {
+  background-color: white;
+  color: #007bff;
+  border-radius: 50%;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.tool-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-card.selectable:hover, .tool-card.inspectable:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.tool-card.selected {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.tool-card-header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.tool-card-header h3 {
+  margin: 0;
+  color: #0056b3;
+  font-size: 1.2rem;
+}
+
+.tool-card-body {
+    flex-grow: 1;
+}
+
+.tool-card-body p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #555;
+  text-align: left;
+}
+
+.tool-card-body p strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.tool-card-footer {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.tool-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.my-tools-section, .warehouse-section {
+  margin-top: 40px;
 }
